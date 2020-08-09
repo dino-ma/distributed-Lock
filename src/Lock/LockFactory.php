@@ -1,13 +1,13 @@
 <?php
 
-namespace DistributedLock\Adapter;
+namespace DistributedLock\Lock;
 
-use DistributedLock\Adapter\Driver\PredisAdapter;
-use DistributedLock\Exceptions\AdapterFactoryException;
+use DistributedLock\Lock\Driver\PredisLock;
+use DistributedLock\Exceptions\LockFactoryException;
 use DistributedLock\Request\PredisRequest;
 use Predis\Client;
 
-class AdapterFactory
+class LockFactory
 {
 
     protected static $maps = [
@@ -15,14 +15,13 @@ class AdapterFactory
     ];
 
 
+
     /**
-     * 创建一个Predis对象
-     *
      * @param PredisRequest $predisRequest
-     * @return PredisAdapter
-     * @throws AdapterFactoryException
+     * @return PredisLock
+     * @throws LockFactoryException
      */
-    public static function createPredisAdapter(PredisRequest $predisRequest) : PredisAdapter
+    public static function createPredisLock(PredisRequest $predisRequest) : PredisLock
     {
         try {
             $client = new Client(
@@ -37,9 +36,9 @@ class AdapterFactory
             }
             $client->select($predisRequest->db);
 
-            return new PredisAdapter($client);
-        } catch (AdapterFactoryException $exception) {
-            throw new AdapterFactoryException('Failed create PredisAdapter', 0, $exception);
+            return new PredisLock($client);
+        } catch (LockFactoryException $exception) {
+            throw new LockFactoryException('Failed create PredisLock', 0, $exception);
         }
     }
 }
